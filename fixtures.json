@@ -1,0 +1,94 @@
+[
+    {
+      "model": "finance.type",
+      "pk": 1,
+      "fields": {
+        "name": "Пополнение"
+      }
+    },
+    {
+      "model": "finance.type",
+      "pk": 2,
+      "fields": {
+        "name": "Списание"
+      }
+    },
+    {
+      "model": "finance.status",
+      "pk": 1,
+      "fields": {
+        "name": "Бизнес"
+      }
+    },
+    {
+      "model": "finance.status",
+      "pk": 2,
+      "fields": {
+        "name": "Личное"
+      }
+    },
+    {
+      "model": "finance.category",
+      "pk": 1,
+      "fields": {
+        "name": "Инвестиции",
+        "type": 1
+      }
+    },
+    {
+      "model": "finance.category",
+      "pk": 2,
+      "fields": {
+        "name": "Маркетинг",
+        "type": 2
+      }
+    },
+    {
+      "model": "finance.category",
+      "pk": 3,
+      "fields": {
+        "name": "Инфраструктура",
+        "type": 2
+      }
+    },
+    {
+      "model": "finance.subcategory",
+      "pk": 1,
+      "fields": {
+        "name": "Частный инвестор",
+        "category": 1
+      }
+    },
+    {
+      "model": "finance.subcategory",
+      "pk": 2,
+      "fields": {
+        "name": "Avito",
+        "category": 2
+      }
+    },
+    {
+      "model": "finance.subcategory",
+      "pk": 3,
+      "fields": {
+        "name": "YouTube",
+        "category": 2
+      }
+    },
+    {
+      "model": "finance.subcategory",
+      "pk": 4,
+      "fields": {
+        "name": "Digital Ocean",
+        "category": 3
+      }
+    },
+    {
+      "model": "finance.subcategory",
+      "pk": 5,
+      "fields": {
+        "name": "Hetzner",
+        "category": 3
+      }
+    }
+  ]
