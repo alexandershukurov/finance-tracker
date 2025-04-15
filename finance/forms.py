@@ -1,5 +1,5 @@
 from django import forms
-from .models import CashflowEntry, Category, Subcategory
+from .models import CashflowEntry, Category, Subcategory, Type, Status
 
 class CashflowEntryForm(forms.ModelForm):
     class Meta:
@@ -14,6 +14,7 @@ class CashflowEntryForm(forms.ModelForm):
             'amount': forms.NumberInput(attrs={'class': 'form-control'}),
             'comment': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
         }
+    
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -33,3 +34,22 @@ class CashflowEntryForm(forms.ModelForm):
                 self.fields['subcategory'].queryset = Subcategory.objects.filter(category_id=cat_id)
             except (ValueError, TypeError):
                 pass
+class TypeForm(forms.ModelForm):
+    class Meta:
+        model = Type
+        fields = ['name']
+
+class StatusForm(forms.ModelForm):
+    class Meta:
+        model = Status
+        fields = ['name']
+
+class CategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = ['name', 'type']
+
+class SubcategoryForm(forms.ModelForm):
+    class Meta:
+        model = Subcategory
+        fields = ['name', 'category']

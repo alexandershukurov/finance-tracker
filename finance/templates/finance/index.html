@@ -1,72 +1,84 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>ДДС: Движение Денег</title>
+    <title>Финансовый трекер</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="p-4">
-    <div class="container">
-        <h1 class="mb-4">💸 Движение денежных средств</h1>
+<div class="container">
+    <h1 class="mb-4">Движение денежных средств</h1>
 
-        <form method="get" class="row g-3 mb-4">
-            <div class="col-md-2">
-                <input type="date" name="date_from" class="form-control" placeholder="От даты">
-            </div>
-            <div class="col-md-2">
-                <input type="date" name="date_to" class="form-control" placeholder="До даты">
-            </div>
-            <div class="col-md-2">
-                <select name="status" class="form-select">
-                    <option value="">Статус</option>
-                    {% for s in statuses %}
-                        <option value="{{ s.id }}">{{ s.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-2">
-                <select name="type" class="form-select">
-                    <option value="">Тип</option>
-                    {% for t in types %}
-                        <option value="{{ t.id }}">{{ t.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100">Фильтровать</button>
-            </div>
-        </form>
-
-        <table class="table table-bordered table-striped">
-            <thead class="table-dark">
-                <tr>
-                    <th>Дата</th>
-                    <th>Тип</th>
-                    <th>Статус</th>
-                    <th>Категория</th>
-                    <th>Подкатегория</th>
-                    <th>Сумма</th>
-                    <th>Комментарий</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for entry in entries %}
-                    <tr>
-                        <td>{{ entry.date }}</td>
-                        <td>{{ entry.type.name }}</td>
-                        <td>{{ entry.status.name }}</td>
-                        <td>{{ entry.category.name }}</td>
-                        <td>{{ entry.subcategory.name }}</td>
-                        <td>{{ entry.amount }} ₽</td>
-                        <td>{{ entry.comment }}</td>
-                    </tr>
-                {% empty %}
-                    <tr><td colspan="7" class="text-center">Нет записей</td></tr>
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-3">
+            <label for="date_from" class="form-label">С даты</label>
+            <input type="date" name="date_from" class="form-control" value="{{ request.GET.date_from }}">
+        </div>
+        <div class="col-md-3">
+            <label for="date_to" class="form-label">По дату</label>
+            <input type="date" name="date_to" class="form-control" value="{{ request.GET.date_to }}">
+        </div>
+        <div class="col-md-3">
+            <label for="status" class="form-label">Статус</label>
+            <select name="status" class="form-select">
+                <option value="">---</option>
+                {% for s in statuses %}
+                    <option value="{{ s.id }}" {% if request.GET.status == s.id|stringformat:"s" %}selected{% endif %}>{{ s.name }}</option>
                 {% endfor %}
-            </tbody>
-        </table>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="type" class="form-label">Тип</label>
+            <select name="type" class="form-select">
+                <option value="">---</option>
+                {% for t in types %}
+                    <option value="{{ t.id }}" {% if request.GET.type == t.id|stringformat:"s" %}selected{% endif %}>{{ t.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Фильтровать</button>
+            <a href="{% url 'add_entry' %}" class="btn btn-success">Добавить запись</a>
+            <a href="{% url 'manage' %}" class="btn btn-outline-secondary">Справочники</a>
+        </div>
+    </form>
 
-        <a href="{% url 'add_entry' %}" class="btn btn-success mt-3">➕ Добавить запись</a>
-    </div>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Дата</th>
+                <th>Тип</th>
+                <th>Статус</th>
+                <th>Категория</th>
+                <th>Подкатегория</th>
+                <th>Сумма</th>
+                <th>Комментарий</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in entries %}
+                <tr>
+                    <td>{{ entry.date }}</td>
+                    <td>{{ entry.type.name }}</td>
+                    <td>{{ entry.status.name }}</td>
+                    <td>{{ entry.category.name }}</td>
+                    <td>{{ entry.subcategory.name }}</td>
+                    <td>{{ entry.amount|floatformat:2 }} ₽</td>
+                    <td>{{ entry.comment }}</td>
+                    <td>
+                        <a href="{% url 'delete_entry' entry.id %}" class="btn btn-sm btn-danger">Удалить</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="8">Нет записей</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
 </body>
 </html>

@@ -2,10 +2,14 @@ from rest_framework import viewsets
 from .models import Status, Type, Category, Subcategory, CashflowEntry
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import render, redirect
-from .models import CashflowEntry, Status, Type
+from .models import CashflowEntry, Status, Type, Category, Subcategory
+from .forms import TypeForm, StatusForm, CategoryForm, SubcategoryForm
 from .forms import CashflowEntryForm
 from django.http import JsonResponse
-from .models import Category, Subcategory
+from django.views.decorators.http import require_GET
+from django.apps import apps
+from django.http import HttpResponseNotFound
+from django.shortcuts import get_object_or_404, redirect, render
 from .serializers import (
     StatusSerializer,
     TypeSerializer,
@@ -80,3 +84,95 @@ def get_subcategories_by_category(request):
     category_id = request.GET.get('category_id')
     subcategories = Subcategory.objects.filter(category_id=category_id).values('id', 'name')
     return JsonResponse(list(subcategories), safe=False)
+@require_GET
+def manage_view(request):
+    types = Type.objects.all()
+    statuses = Status.objects.all()
+    categories = Category.objects.select_related('type').all()
+    subcategories = Subcategory.objects.select_related('category').all()
+
+    type_form = TypeForm(request.POST or None, prefix='type')
+    status_form = StatusForm(request.POST or None, prefix='status')
+    category_form = CategoryForm(request.POST or None, prefix='category')
+    subcategory_form = SubcategoryForm(request.POST or None, prefix='subcategory')
+
+    if request.method == 'POST':
+        if 'submit_type' in request.POST and type_form.is_valid():
+            type_form.save()
+            return redirect('manage')
+        if 'submit_status' in request.POST and status_form.is_valid():
+            status_form.save()
+            return redirect('manage')
+        if 'submit_category' in request.POST and category_form.is_valid():
+            category_form.save()
+            return redirect('manage')
+        if 'submit_subcategory' in request.POST and subcategory_form.is_valid():
+            subcategory_form.save()
+            return redirect('manage')
+
+    return render(request, 'finance/manage.html', {
+        'types': types,
+        'statuses': statuses,
+        'categories': categories,
+        'subcategories': subcategories,
+        'type_form': type_form,
+        'status_form': status_form,
+        'category_form': category_form,
+        'subcategory_form': subcategory_form,
+    })
+    
+MODEL_MAP = {
+    'type': Type,
+    'status': Status,
+    'category': Category,
+    'subcategory': Subcategory
+}
+def edit_item(request, model, pk):
+    if model not in MODEL_MAP:
+        return HttpResponseNotFound("Unknown model.")
+
+    ModelClass = MODEL_MAP[model]
+    instance = get_object_or_404(ModelClass, pk=pk)
+
+    # Формы соответствующие
+    FormClass = {
+        'type': TypeForm,
+        'status': StatusForm,
+        'category': CategoryForm,
+        'subcategory': SubcategoryForm
+    }[model]
+
+    if request.method == 'POST':
+        form = FormClass(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            return redirect('manage')
+    else:
+        form = FormClass(instance=instance)
+
+    return render(request, 'finance/edit_item.html', {
+        'form': form,
+        'model_name': model
+    })
+
+def delete_item(request, model, pk):
+    if model not in MODEL_MAP:
+        return HttpResponseNotFound("Unknown model.")
+
+    ModelClass = MODEL_MAP[model]
+    instance = get_object_or_404(ModelClass, pk=pk)
+
+    if request.method == 'POST':
+        instance.delete()
+        return redirect('manage')
+
+    return render(request, 'finance/delete_item.html', {
+        'object': instance,
+        'model_name': model
+    })
+def delete_entry(request, pk):
+    entry = get_object_or_404(CashflowEntry, pk=pk)
+    if request.method == 'POST':
+        entry.delete()
+        return redirect('index')
+    return render(request, 'finance/delete_entry.html', {'entry': entry})
