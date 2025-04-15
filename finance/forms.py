@@ -38,18 +38,33 @@ class TypeForm(forms.ModelForm):
     class Meta:
         model = Type
         fields = ['name']
+        labels = {
+            'name': 'Название',
+        }
 
 class StatusForm(forms.ModelForm):
     class Meta:
         model = Status
         fields = ['name']
+        labels = {
+            'name': 'Название',
+        }
 
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
         fields = ['name', 'type']
+        labels = {
+            'name': 'Название',
+            'type': 'Тип',
+        }
 
 class SubcategoryForm(forms.ModelForm):
     class Meta:
         model = Subcategory
         fields = ['name', 'category']
+        labels = {
+            'name': 'Название',
+            'category': 'Категория',
+        }
+        

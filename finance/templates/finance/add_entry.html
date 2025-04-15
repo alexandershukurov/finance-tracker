@@ -9,7 +9,7 @@
 <script src="{% static 'finance/form.js' %}"></script>
 <body class="p-4">
 <div class="container">
-    <h2>➕ Новая запись ДДС</h2>
+    <h2>Новая запись ДДС</h2>
     <form method="post" class="mt-4">
         {% csrf_token %}
         {{ form.as_p }}
