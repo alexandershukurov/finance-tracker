@@ -1,0 +1,93 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Управление справочниками</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+<div class="container">
+    <h1 class="mb-4">Управление справочниками</h1>
+
+    <h3>Типы</h3>
+    <ul class="list-group mb-3">
+        {% for t in types %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ t.name }}
+                <span>
+                    <a href="{% url 'edit_item' 'type' t.id %}" class="btn btn-sm btn-warning">✏️</a>
+                    <a href="{% url 'delete_item' 'type' t.id %}" class="btn btn-sm btn-danger">🗑</a>
+                </span>
+            </li>
+        {% endfor %}
+    </ul>
+    <form method="post">
+        {% csrf_token %}
+        {{ type_form.as_p }}
+        <button type="submit" name="submit_type" class="btn btn-success">Добавить тип</button>
+    </form>
+
+    <hr>
+
+    <h3>Статусы</h3>
+    <ul class="list-group mb-3">
+        {% for s in statuses %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ s.name }}
+                <span>
+                    <a href="{% url 'edit_item' 'status' s.id %}" class="btn btn-sm btn-warning">✏️</a>
+                    <a href="{% url 'delete_item' 'status' s.id %}" class="btn btn-sm btn-danger">🗑</a>
+                </span>
+            </li>
+        {% endfor %}
+    </ul>
+    <form method="post">
+        {% csrf_token %}
+        {{ status_form.as_p }}
+        <button type="submit" name="submit_status" class="btn btn-success">Добавить статус</button>
+    </form>
+
+    <hr>
+
+    <h3>Категории</h3>
+    <ul class="list-group mb-3">
+        {% for c in categories %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ c.name }} (Тип: {{ c.type.name }})
+                <span>
+                    <a href="{% url 'edit_item' 'category' c.id %}" class="btn btn-sm btn-warning">✏️</a>
+                    <a href="{% url 'delete_item' 'category' c.id %}" class="btn btn-sm btn-danger">🗑</a>
+                </span>
+            </li>
+        {% endfor %}
+    </ul>
+    <form method="post">
+        {% csrf_token %}
+        {{ category_form.as_p }}
+        <button type="submit" name="submit_category" class="btn btn-success">Добавить категорию</button>
+    </form>
+
+    <hr>
+
+    <h3>Подкатегории</h3>
+    <ul class="list-group mb-3">
+        {% for sc in subcategories %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ sc.name }} (Категория: {{ sc.category.name }})
+                <span>
+                    <a href="{% url 'edit_item' 'subcategory' sc.id %}" class="btn btn-sm btn-warning">✏️</a>
+                    <a href="{% url 'delete_item' 'subcategory' sc.id %}" class="btn btn-sm btn-danger">🗑</a>
+                </span>
+            </li>
+        {% endfor %}
+    </ul>
+    <form method="post">
+        {% csrf_token %}
+        {{ subcategory_form.as_p }}
+        <button type="submit" name="submit_subcategory" class="btn btn-success">Добавить подкатегорию</button>
+    </form>
+
+</div>
+</body>
+</html>

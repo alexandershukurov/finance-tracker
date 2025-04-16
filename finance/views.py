@@ -84,8 +84,10 @@ def get_subcategories_by_category(request):
     category_id = request.GET.get('category_id')
     subcategories = Subcategory.objects.filter(category_id=category_id).values('id', 'name')
     return JsonResponse(list(subcategories), safe=False)
-@require_GET
 def manage_view(request):
+    print("===== ЗАПРОС НА /manage/ =====")
+    print("METHOD:", request.method)
+    print("POST DATA:", request.POST)
     types = Type.objects.all()
     statuses = Status.objects.all()
     categories = Category.objects.select_related('type').all()
@@ -93,8 +95,8 @@ def manage_view(request):
 
     type_form = TypeForm(request.POST or None, prefix='type')
     status_form = StatusForm(request.POST or None, prefix='status')
-    category_form = CategoryForm(request.POST or None, prefix='category')
-    subcategory_form = SubcategoryForm(request.POST or None, prefix='subcategory')
+    category_form = CategoryForm(request.POST or None)
+    subcategory_form = SubcategoryForm(request.POST or None)
 
     if request.method == 'POST':
         if 'submit_type' in request.POST and type_form.is_valid():
@@ -162,14 +164,8 @@ def delete_item(request, model, pk):
     ModelClass = MODEL_MAP[model]
     instance = get_object_or_404(ModelClass, pk=pk)
 
-    if request.method == 'POST':
-        instance.delete()
-        return redirect('manage')
-
-    return render(request, 'finance/delete_item.html', {
-        'object': instance,
-        'model_name': model
-    })
+    instance.delete()
+    return redirect('manage')
 def delete_entry(request, pk):
     entry = get_object_or_404(CashflowEntry, pk=pk)
     if request.method == 'POST':
